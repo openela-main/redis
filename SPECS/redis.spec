@@ -23,7 +23,7 @@
 
 Name:              redis
 Version:           7.0.12
-Release:           1%{?dist}
+Release:           2%{?dist}
 Summary:           A persistent key-value database
 # redis, hiredis: BSD-3-Clause
 # hdrhistogram, jemalloc, lzf, linenoise: BSD-2-Clause
@@ -47,6 +47,9 @@ Source10:          https://github.com/%{name}/%{name}-doc/archive/%{doc_commit}/
 # https://github.com/redis/redis/pull/3491 - man pages
 Patch0001:         0001-1st-man-pageis-for-redis-cli-redis-benchmark-redis-c.patch
 Patch0002:         0002-deps-jemalloc-Do-not-force-building-in-gnu99-mode.patch
+
+# Security patches
+Patch100:          redis-CVE-2023-41056.patch
 
 BuildRequires: make
 BuildRequires:     gcc
@@ -134,6 +137,7 @@ administration and development.
 mv ../%{name}-doc-%{doc_commit} doc
 %patch -P0001 -p1
 %patch -P0002 -p1
+%patch -P100  -p1
 
 mv deps/lua/COPYRIGHT    COPYRIGHT-lua
 mv deps/jemalloc/COPYING COPYING-jemalloc
@@ -302,6 +306,10 @@ fi
 
 
 %changelog
+* Tue Feb  6 2024 Remi Collet <rcollet@redhat.com> - 7.0.12-2
+- Heap Buffer Overflow may lead to potential remote code execution
+  CVE-2023-41056
+
 * Tue Jul 11 2023 Remi Collet <rcollet@redhat.com> - 7.0.12-1
 - rebase to 7.0.12 #2221899
 
