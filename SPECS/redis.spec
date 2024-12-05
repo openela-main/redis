@@ -1,3 +1,4 @@
+# RHEL spec file for redis, from
 #
 # Fedora spec file for redis
 #
@@ -22,13 +23,14 @@
 %global macrosdir %(d=%{_rpmconfigdir}/macros.d; [ -d $d ] || d=%{_sysconfdir}/rpm; echo $d)
 
 Name:              redis
-Version:           7.0.12
-Release:           2%{?dist}
+Version:           7.2.6
+Release:           1%{?dist}
 Summary:           A persistent key-value database
 # redis, hiredis: BSD-3-Clause
 # hdrhistogram, jemalloc, lzf, linenoise: BSD-2-Clause
 # lua: MIT
-License:           BSD-3-Clause AND BSD-2-Clause AND MIT
+# fpconv: BSL-1.0
+License:           BSD-3-Clause AND BSD-2-Clause AND MIT AND BSL-1.0
 URL:               https://redis.io
 Source0:           https://download.redis.io/releases/%{name}-%{version}.tar.gz
 Source1:           %{name}.logrotate
@@ -46,10 +48,6 @@ Source10:          https://github.com/%{name}/%{name}-doc/archive/%{doc_commit}/
 # Update configuration for Fedora
 # https://github.com/redis/redis/pull/3491 - man pages
 Patch0001:         0001-1st-man-pageis-for-redis-cli-redis-benchmark-redis-c.patch
-Patch0002:         0002-deps-jemalloc-Do-not-force-building-in-gnu99-mode.patch
-
-# Security patches
-Patch100:          redis-CVE-2023-41056.patch
 
 BuildRequires: make
 BuildRequires:     gcc
@@ -69,16 +67,19 @@ Requires(post):    systemd
 Requires(preun):   systemd
 Requires(postun):  systemd
 # from deps/hiredis/hiredis.h
-Provides:          bundled(hiredis) = 0.14.0
+Provides:          bundled(hiredis) = 1.2.0
 # from deps/jemalloc/VERSION
-Provides:          bundled(jemalloc) = 5.2.1
+Provides:          bundled(jemalloc) = 5.3.0
 # from deps/lua/src/lua.h
 Provides:          bundled(lua-libs) = 5.1.5
 # from deps/linenoise/linenoise.h
 Provides:          bundled(linenoise) = 1.0
-Provides:          bundled(lzf)
+# from src/lzf.h
+Provides:          bundled(lzf) = 1.5
 # from deps/hdr_histogram/README.md
 Provides:          bundled(hdr_histogram) = 0.11.0
+# no version
+Provides:          bundled(fpconv)
 
 %global redis_modules_abi 1
 %global redis_modules_dir %{_libdir}/%{name}/modules
@@ -133,17 +134,15 @@ administration and development.
 
 %prep
 %setup -q -b 10
-%setup -q
 mv ../%{name}-doc-%{doc_commit} doc
 %patch -P0001 -p1
-%patch -P0002 -p1
-%patch -P100  -p1
 
-mv deps/lua/COPYRIGHT    COPYRIGHT-lua
-mv deps/jemalloc/COPYING COPYING-jemalloc
-mv deps/hiredis/COPYING  COPYING-hiredis
+mv deps/lua/COPYRIGHT             COPYRIGHT-lua
+mv deps/jemalloc/COPYING          COPYING-jemalloc
+mv deps/hiredis/COPYING           COPYING-hiredis
 mv deps/hdr_histogram/LICENSE.txt LICENSE-hdrhistogram
 mv deps/hdr_histogram/COPYING.txt COPYING-hdrhistogram
+mv deps/fpconv/LICENSE.txt        LICENSE-fpconv
 
 # Configuration file changes
 sed -i -e 's|^logfile .*$|logfile /var/log/redis/redis.log|g' redis.conf
@@ -270,6 +269,7 @@ fi
 %license COPYING-hiredis
 %license LICENSE-hdrhistogram
 %license COPYING-hdrhistogram
+%license LICENSE-fpconv
 %config(noreplace) %{_sysconfdir}/logrotate.d/%{name}
 %attr(0750, redis, root) %dir %{_sysconfdir}/%{name}
 %attr(0640, redis, root) %config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
@@ -306,9 +306,8 @@ fi
 
 
 %changelog
-* Tue Feb  6 2024 Remi Collet <rcollet@redhat.com> - 7.0.12-2
-- Heap Buffer Overflow may lead to potential remote code execution
-  CVE-2023-41056
+* Tue Oct 29 2024 Remi Collet <rcollet@redhat.com> - 7.2.6-1
+- rebase to 7.2.6  RHEL-26628
 
 * Tue Jul 11 2023 Remi Collet <rcollet@redhat.com> - 7.0.12-1
 - rebase to 7.0.12 #2221899
