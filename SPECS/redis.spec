@@ -19,7 +19,7 @@
 %global macrosdir %(d=%{_rpmconfigdir}/macros.d; [ -d $d ] || d=%{_sysconfdir}/rpm; echo $d)
 
 Name:              redis
-Version:           6.2.17
+Version:           6.2.18
 Release:           1%{?dist}
 Summary:           A persistent key-value database
 # redis, jemalloc, linenoise, lzf, hiredis are BSD
@@ -281,6 +281,9 @@ exit 0
 
 
 %changelog
+* Thu Apr 24 2025 Remi Collet <rcollet@redhat.com> - 6.2.18-1
+- rebase to 6.2.18 for CVE-2025-21605
+
 * Mon Jan 13 2025 Remi Collet <rcollet@redhat.com> - 6.2.17-1
 - rebase to 6.2.17 for CVE-2024-46981
 
