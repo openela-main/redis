@@ -23,7 +23,7 @@
 %global macrosdir %(d=%{_rpmconfigdir}/macros.d; [ -d $d ] || d=%{_sysconfdir}/rpm; echo $d)
 
 Name:              redis
-Version:           7.2.10
+Version:           7.2.11
 Release:           1%{?dist}
 Summary:           A persistent key-value database
 # redis, hiredis: BSD-3-Clause
@@ -306,6 +306,9 @@ fi
 
 
 %changelog
+* Tue Oct  7 2025 Remi Collet <rcollet@redhat.com> - 7.2.11-1
+- rebase to 7.2.11 for CVE-2025-49844 CVE-2025-46817 CVE-2025-46818 CVE-2025-46819
+
 * Wed Jul 16 2025 Remi Collet <rcollet@redhat.com> - 7.2.10-1
 - rebase to 7.2.10 for CVE-2025-27151 CVE-2025-32023 and CVE-2025-48367
 
