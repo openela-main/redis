@@ -1,5 +1,5 @@
 #
-# Fedora spec file for redis
+# RHEL / Fedora spec file for redis
 #
 # License: MIT
 # http://opensource.org/licenses/MIT
@@ -19,7 +19,7 @@
 %global macrosdir %(d=%{_rpmconfigdir}/macros.d; [ -d $d ] || d=%{_sysconfdir}/rpm; echo $d)
 
 Name:              redis
-Version:           6.2.7
+Version:           6.2.20
 Release:           1%{?dist}
 Summary:           A persistent key-value database
 # redis, jemalloc, linenoise, lzf, hiredis are BSD
@@ -63,7 +63,7 @@ Requires(post):    systemd
 Requires(preun):   systemd
 Requires(postun):  systemd
 # from deps/hiredis/hiredis.h
-Provides:          bundled(hiredis) = 0.14.0
+Provides:          bundled(hiredis) = 1.0.0
 # from deps/jemalloc/VERSION
 Provides:          bundled(jemalloc) = 5.1.0
 # from deps/lua/src/lua.h
@@ -127,7 +127,7 @@ administration and development.
 %setup -q -b 10
 %setup -q
 mv ../%{name}-doc-%{doc_commit} doc
-%patch0001 -p1
+%patch -P0001 -p1
 
 mv deps/lua/COPYRIGHT    COPYRIGHT-lua
 mv deps/jemalloc/COPYING COPYING-jemalloc
@@ -296,6 +296,21 @@ fi
 
 
 %changelog
+* Tue Oct  7 2025 Remi Collet <rcollet@redhat.com> - 6.2.20-1
+- rebase to 6.2.20 for CVE-2025-49844 CVE-2025-46817 CVE-2025-46818 CVE-2025-46819
+
+* Wed Jul 16 2025 Remi Collet <rcollet@redhat.com> - 6.2.19-1
+- rebase to 6.2.19 for CVE-2025-32023 and CVE-2025-48367
+
+* Thu Apr 24 2025 Remi Collet <rcollet@redhat.com> - 6.2.18-1
+- rebase to 6.2.18 for CVE-2025-21605
+
+* Mon Jan 13 2025 Remi Collet <rcollet@redhat.com> - 6.2.17-1
+- rebase to 6.2.17 for CVE-2024-46981
+
+* Tue Oct 15 2024 Remi Collet <rcollet@redhat.com> - 6.2.16-1
+- rebase to 6.2.16   RHEL-26627
+
 * Tue May 10 2022 Remi Collet <rcollet@redhat.com> - 6.2.7-1
 - rebase to 6.2.7 #2083151
 
