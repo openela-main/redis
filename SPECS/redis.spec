@@ -306,7 +306,7 @@ fi
 
 
 %changelog
-* Tue Oct  7 2025 Remi Collet <rcollet@redhat.com> - 7.2.11-1
+* Thu Oct 16 2025 Remi Collet <rcollet@redhat.com> - 7.2.11-1
 - rebase to 7.2.11 for CVE-2025-49844 CVE-2025-46817 CVE-2025-46818 CVE-2025-46819
 
 * Wed Jul 16 2025 Remi Collet <rcollet@redhat.com> - 7.2.10-1
