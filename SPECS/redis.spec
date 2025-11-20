@@ -20,7 +20,7 @@
 
 Name:              redis
 Version:           6.2.20
-Release:           1%{?dist}
+Release:           2%{?dist}
 Summary:           A persistent key-value database
 # redis, jemalloc, linenoise, lzf, hiredis are BSD
 # lua is MIT
@@ -263,8 +263,8 @@ fi
 %attr(0750, redis, root) %dir %{_sysconfdir}/%{name}
 %attr(0640, redis, root) %config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
 %attr(0640, redis, root) %config(noreplace) %{_sysconfdir}/%{name}/sentinel.conf
-%dir %attr(0750, redis, redis) %{_libdir}/%{name}
-%dir %attr(0750, redis, redis) %{redis_modules_dir}
+%dir %{_libdir}/%{name}
+%dir %{redis_modules_dir}
 %dir %attr(0750, redis, redis) %{_sharedstatedir}/%{name}
 %dir %attr(0750, redis, redis) %{_localstatedir}/log/%{name}
 %exclude %{macrosdir}
@@ -296,8 +296,11 @@ fi
 
 
 %changelog
-* Tue Oct  7 2025 Remi Collet <rcollet@redhat.com> - 6.2.20-1
+* Thu Oct 16 2025 Remi Collet <rcollet@redhat.com> - 6.2.20-2
 - rebase to 6.2.20 for CVE-2025-49844 CVE-2025-46817 CVE-2025-46818 CVE-2025-46819
+
+* Tue Sep 23 2025 Remi Collet <rcollet@redhat.com> - 6.2.19-2
+- fix ownership of /usr/lib64/redis RHEL-6784
 
 * Wed Jul 16 2025 Remi Collet <rcollet@redhat.com> - 6.2.19-1
 - rebase to 6.2.19 for CVE-2025-32023 and CVE-2025-48367
