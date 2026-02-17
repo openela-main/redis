@@ -20,7 +20,7 @@
 
 Name:              redis
 Version:           6.2.20
-Release:           2%{?dist}
+Release:           3%{?dist}
 Summary:           A persistent key-value database
 # redis, jemalloc, linenoise, lzf, hiredis are BSD
 # lua is MIT
@@ -34,6 +34,10 @@ Source6:           %{name}-shutdown
 Source7:           %{name}-limit-systemd
 Source9:           macros.%{name}
 Source10:          https://github.com/%{name}/%{name}-doc/archive/%{doc_commit}/%{name}-doc-%{short_doc_commit}.tar.gz
+Source11:          %{name}.sysusers
+Source12:          %{name}.tmpfiles
+
+
 
 # To refresh patches:
 # tar xf redis-xxx.tar.gz && cd redis-xxx && git init && git add . && git commit -m "%%{version} baseline"
@@ -52,13 +56,14 @@ BuildRequires:     tcl
 %endif
 BuildRequires:     pkgconfig(libsystemd)
 BuildRequires:     systemd-devel
+BuildRequires:     systemd-rpm-macros
+%{?sysusers_requires_compat}
 BuildRequires:     openssl-devel
 # redis-trib functionality migrated to redis-cli
 Obsoletes:         redis-trib < 5
 # Required for redis-shutdown
 Requires:          /bin/awk
 Requires:          logrotate
-Requires(pre):     shadow-utils
 Requires(post):    systemd
 Requires(preun):   systemd
 Requires(postun):  systemd
@@ -154,6 +159,12 @@ fi
 %install
 make %{make_flags} install
 
+# System user
+install -p -D -m 0644 %{SOURCE11} %{buildroot}%{_sysusersdir}/%{name}.conf
+
+# Install tmpfiles.d file
+install -p -D -m 0644 %{SOURCE12} %{buildroot}%{_tmpfilesdir}/%{name}.conf
+
 # Filesystem.
 install -d %{buildroot}%{_sharedstatedir}/%{name}
 install -d %{buildroot}%{_localstatedir}/log/%{name}
@@ -215,11 +226,7 @@ make %{make_flags} test-sentinel
 %endif
 
 %pre
-getent group %{name} &> /dev/null || \
-groupadd -r %{name} &> /dev/null
-getent passwd %{name} &> /dev/null || \
-useradd -r -g %{name} -d %{_sharedstatedir}/%{name} -s /sbin/nologin \
--c 'Redis Database Server' %{name} &> /dev/null
+%sysusers_create_compat %{SOURCE11}
 exit 0
 
 %post
@@ -281,6 +288,8 @@ fi
 %dir %{_sysconfdir}/systemd/system/%{name}-sentinel.service.d
 %config(noreplace) %{_sysconfdir}/systemd/system/%{name}-sentinel.service.d/limit.conf
 %dir %attr(0755, redis, redis) %ghost %{_localstatedir}/run/%{name}
+%{_sysusersdir}/%{name}.conf
+%{_tmpfilesdir}/%{name}.conf
 
 %files devel
 # main package is not required
@@ -296,6 +305,10 @@ fi
 
 
 %changelog
+* Tue Jan 13 2026 Lukas Javorsky <ljavorsk@redhat.com> - 6.2.20-3
+- add sysusers.d file for user management
+- add tmpfiles.d file for temporary dir management
+
 * Thu Oct 16 2025 Remi Collet <rcollet@redhat.com> - 6.2.20-2
 - rebase to 6.2.20 for CVE-2025-49844 CVE-2025-46817 CVE-2025-46818 CVE-2025-46819
 
