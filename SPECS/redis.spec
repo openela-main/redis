@@ -23,8 +23,8 @@
 %global macrosdir %(d=%{_rpmconfigdir}/macros.d; [ -d $d ] || d=%{_sysconfdir}/rpm; echo $d)
 
 Name:              redis
-Version:           7.2.11
-Release:           2%{?dist}
+Version:           7.2.14
+Release:           1%{?dist}
 Summary:           A persistent key-value database
 # redis, hiredis: BSD-3-Clause
 # hdrhistogram, jemalloc, lzf, linenoise: BSD-2-Clause
@@ -314,6 +314,9 @@ fi
 
 
 %changelog
+* Tue May 19 2026 Petr Khartskhaev <pkhartsk@redhat.com> - 7.2.14-1
+- rebase to 7.2.14 for CVE-2026-23479 CVE-2026-25243 CVE-2026-23631
+
 * Tue Jan 13 2026 Lukas Javorsky <ljavorsk@redhat.com> - 7.2.11-2
 - add sysusers.d file for user management
 - add tmpfiles.d file for temporary dir management
