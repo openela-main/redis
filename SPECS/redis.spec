@@ -19,7 +19,7 @@
 %global macrosdir %(d=%{_rpmconfigdir}/macros.d; [ -d $d ] || d=%{_sysconfdir}/rpm; echo $d)
 
 Name:              redis
-Version:           6.2.22
+Version:           6.2.24
 Release:           1%{?dist}
 Summary:           A persistent key-value database
 # redis, jemalloc, linenoise, lzf, hiredis are BSD
@@ -137,6 +137,15 @@ mv ../%{name}-doc-%{doc_commit} doc
 mv deps/lua/COPYRIGHT    COPYRIGHT-lua
 mv deps/jemalloc/COPYING COPYING-jemalloc
 mv deps/hiredis/COPYING  COPYING-hiredis
+
+# See https://bugzilla.redhat.com/2240293
+# See https://src.fedoraproject.org/rpms/jemalloc/blob/rawhide/f/jemalloc.spec#_34
+%ifarch %ix86 %arm x86_64 s390x
+sed -e 's/--with-lg-quantum/--with-lg-page=12 --with-lg-quantum/' -i deps/Makefile
+%endif
+%ifarch ppc64 ppc64le aarch64
+sed -e 's/--with-lg-quantum/--with-lg-page=16 --with-lg-quantum/' -i deps/Makefile
+%endif
 
 # Configuration file changes
 sed -i -e 's|^logfile .*$|logfile /var/log/redis/redis.log|g' redis.conf
@@ -281,6 +290,9 @@ exit 0
 
 
 %changelog
+* Fri Aug 21 2026 Petr Khartskhaev <pkhartsk@redhat.com> - 6.2.24-1
+- rebase to 6.2.24 for CVE-2026-66373
+
 * Thu May 21 2026 Petr Khartskhaev <pkhartsk@redhat.com> - 6.2.22-1
 - rebase to 6.2.22 for CVE-2026-25243
 
