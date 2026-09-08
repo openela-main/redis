@@ -23,7 +23,7 @@
 %global macrosdir %(d=%{_rpmconfigdir}/macros.d; [ -d $d ] || d=%{_sysconfdir}/rpm; echo $d)
 
 Name:              redis
-Version:           7.2.14
+Version:           7.2.16
 Release:           1%{?dist}
 Summary:           A persistent key-value database
 # redis, hiredis: BSD-3-Clause
@@ -52,6 +52,8 @@ Source12:          %{name}.tmpfiles
 # Update configuration for Fedora
 # https://github.com/redis/redis/pull/3491 - man pages
 Patch0001:         0001-1st-man-pageis-for-redis-cli-redis-benchmark-redis-c.patch
+# Backport of https://github.com/redis/redis/pull/15263
+Patch0002:         0002-cve-2026-72568.patch
 
 BuildRequires: make
 BuildRequires:     gcc
@@ -140,6 +142,7 @@ administration and development.
 %setup -q -b 10
 mv ../%{name}-doc-%{doc_commit} doc
 %patch -P0001 -p1
+%patch -P0002 -p1
 
 mv deps/lua/COPYRIGHT             COPYRIGHT-lua
 mv deps/jemalloc/COPYING          COPYING-jemalloc
@@ -314,6 +317,9 @@ fi
 
 
 %changelog
+* Fri Aug 21 2026 Petr Khartskhaev <pkhartsk@redhat.com> - 7.2.16-1
+- rebase to 7.2.16 for CVE-2026-66373 and backport CVE-2026-72568
+
 * Tue May 19 2026 Petr Khartskhaev <pkhartsk@redhat.com> - 7.2.14-1
 - rebase to 7.2.14 for CVE-2026-23479 CVE-2026-25243 CVE-2026-23631
 
